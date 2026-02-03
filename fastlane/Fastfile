@@ -1,27 +1,149 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
+# Fastfile for iOSCICD
+# This file contains all the automated tasks (lanes) for your iOS app
 
 default_platform(:ios)
 
 platform :ios do
-  desc "Build the app"
+  
+  #########################################
+  # TESTING
+  #########################################
+  
+  desc "Run all tests"
+  lane :test do
+    run_tests(
+      scheme: "iOSCICD",
+      devices: ["iPhone 15 Pro"],
+      clean: true
+    )
+  end
+  
+  #########################################
+  # BUILDING
+  #########################################
+  
+  desc "Build the app for simulator (quick build for CI)"
   lane :build do
     xcodebuild(
       scheme: "iOSCICD",
       project: "iOSCICD.xcodeproj",
-      clean: true
+      clean: true,
+      destination: "generic/platform=iOS Simulator"
     )
   end
+  
+  desc "Build the app for iOS device (creates .ipa file)"
+  lane :build_release do
+    gym(
+      scheme: "iOSCICD",
+      clean: true,
+      export_method: "development",
+      destination: "generic/platform=iOS"
+    )
+  end
+  
+  #########################################
+  # DEPLOYMENT
+  #########################################
+  
+  desc "Deploy to TestFlight"
+  lane :beta do
+    # Increment the build number so each build is unique
+    increment_build_number(
+      xcodeproj: "iOSCICD.xcodeproj"
+    )
+    
+    # Build the app for App Store
+    gym(
+      scheme: "iOSCICD",
+      export_method: "app-store",
+      destination: "generic/platform=iOS",
+      clean: true
+    )
+    
+    # Upload to TestFlight
+    pilot(
+      skip_waiting_for_build_processing: true,
+      skip_submission: true
+    )
+  end
+  
+  desc "Deploy to App Store"
+  lane :release do
+    # Increment version number (e.g., 1.0.0 -> 1.0.1)
+    increment_version_number(
+      bump_type: "patch"  # Can be "major", "minor", or "patch"
+    )
+    
+    # Increment build number
+    increment_build_number(
+      xcodeproj: "iOSCICD.xcodeproj"
+    )
+    
+    # Build the app
+    gym(
+      scheme: "iOSCICD",
+      export_method: "app-store",
+      destination: "generic/platform=iOS",
+      clean: true
+    )
+    
+    # Upload to App Store Connect
+    deliver(
+      submit_for_review: false,
+      automatic_release: false
+    )
+  end
+  
+  #########################################
+  # CODE SIGNING (for advanced users)
+  #########################################
+  
+  desc "Sync code signing with match"
+  lane :sync_signing do
+    match(
+      type: "appstore",
+      readonly: true
+    )
+  end
+  
+  #########################################
+  # UTILITY LANES
+  #########################################
+  
+  desc "Bump major version (1.0.0 -> 2.0.0)"
+  lane :bump_major do
+    increment_version_number(bump_type: "major")
+  end
+  
+  desc "Bump minor version (1.0.0 -> 1.1.0)"
+  lane :bump_minor do
+    increment_version_number(bump_type: "minor")
+  end
+  
+  desc "Bump patch version (1.0.0 -> 1.0.1)"
+  lane :bump_patch do
+    increment_version_number(bump_type: "patch")
+  end
+  
+  #########################################
+  # ERROR HANDLING
+  #########################################
+  
+  error do |lane, exception|
+    # This runs if any lane fails
+    UI.error("❌ Error in lane '#{lane}': #{exception.message}")
+    # You can add Slack notifications here later
+  end
+  
+  #########################################
+  # SUCCESS HANDLING
+  #########################################
+  
+  after_all do |lane|
+    # This runs after any lane succeeds
+    UI.success("✅ Successfully completed lane '#{lane}'")
+    # You can add Slack notifications here later
+  end
+
 end
