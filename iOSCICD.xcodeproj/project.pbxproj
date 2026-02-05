@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CF720C342F34BC20009B78D3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = CF720C332F34BC20009B78D3 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		CF720BB12F31D19E009B78D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		CF720BA32F31D19C009B78D3 /* iOSCICD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSCICD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF720BB02F31D19E009B78D3 /* iOSCICDTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSCICDTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF720BBA2F31D19E009B78D3 /* iOSCICDUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSCICDUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CF720C332F34BC20009B78D3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		CF720B9A2F31D19C009B78D3 = {
 			isa = PBXGroup;
 			children = (
+				CF720C332F34BC20009B78D3 /* README.md */,
 				CF720BA52F31D19C009B78D3 /* iOSCICD */,
 				CF720BB32F31D19E009B78D3 /* iOSCICDTests */,
 				CF720BBD2F31D19E009B78D3 /* iOSCICDUITests */,
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF720C342F34BC20009B78D3 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
